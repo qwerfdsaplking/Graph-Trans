@@ -1,5 +1,3 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
 import copy
 from typing import Optional
 
@@ -46,11 +44,6 @@ class Adj(NamedTuple):
         adj_t = self.adj_t.to(*args, **kwargs)
         e_id = self.e_id.to(*args, **kwargs) if self.e_id is not None else None
         return Adj(adj_t, e_id, self.size)
-
-
-
-
-
 
 
 

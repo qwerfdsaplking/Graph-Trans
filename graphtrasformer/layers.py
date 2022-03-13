@@ -8,7 +8,6 @@ import torch.nn.functional as F
 
 
 
-
 def get_activation_function(activation: str='PReLU') -> nn.Module:
     if activation == 'ReLU':
         return nn.ReLU()

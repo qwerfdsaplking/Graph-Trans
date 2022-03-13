@@ -179,12 +179,6 @@ def collator(items, args):
     svd_pos_embs = torch.cat([pad_pos_emb_unsqueeze(i, max_node_num) for i in svd_pos_embs]) if not isinstance(svd_pos_embs[0],int) else None
 
 
-    try:
-        idx=torch.LongTensor(idxs)
-    except:
-        print('erroor')
-        print(idxs)
-
 
     return dict(
         idx=torch.LongTensor(idxs),

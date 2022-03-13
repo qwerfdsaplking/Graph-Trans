@@ -4,22 +4,9 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 from argparse import ArgumentParser, Namespace
-from accelerate import Accelerator
-import datasets
-from datasets import load_dataset, load_metric
-from tqdm.auto import tqdm
-from gt_dataset import *
-import transformers
-from transformers.optimization import get_linear_schedule_with_warmup,get_constant_schedule_with_warmup
-from transformers import AdamW
 
-import pickle
-import time
-import torch
-import math
-from torch.nn import init
-import json
-import torch.nn as nn
+from gt_dataset import *
+
 import gc
 from graphtrasformer.architectures import *
 import transformers
@@ -35,9 +22,7 @@ from transformers import (
     default_data_collator,
     set_seed,
 )
-from transformers.trainer_utils import get_last_checkpoint
-from transformers.utils import check_min_version
-from transformers.utils.versions import require_version
+
 
 from sklearn import metrics
 import h5py
@@ -48,10 +33,7 @@ import logging
 import time
 import torch.onnx
 import os
-import psutil
-import sys
-from torch.utils.data import IterableDataset, DataLoader, get_worker_info
-import random
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
 import warnings
@@ -292,19 +274,14 @@ if __name__=='__main__':
             labels = labels.astype(np.long)
             return metric.compute(predictions=preds, references=labels)
 
-
         elif task_type=='multi_binary_classification' and metric_name=='AP':
-            #preds = torch.where(torch.sigmoid(torch.tensor(preds))<0.5,0,1).numpy()
             preds = torch.sigmoid(torch.tensor(preds)).numpy()
-            print(preds.shape,labels.shape)
             return {metric_name:metric.eval({'y_true':labels,'y_pred':preds})['ap']}#输入的格式，输出的格式都要确认 #确认node edge特征是否正确处理
-
 
         elif task_type=='regression':
             return {metric_name:metric(torch.tensor(preds),torch.tensor(labels)).item()}#mae
 
         elif task_type=='binary_classification' and metric_name=='ROC-AUC':
-            #return {metric_name:metric.eval({'y_true':labels,'y_pred':preds})['ap']}
             return {metric_name:roc_auc_score(y_true=labels,y_score=torch.sigmoid(torch.tensor(preds)).numpy())}
         elif task_type=='binary_classification' and metric_name=='accuracy':
             return metric.compute(predictions=torch.sigmoid(torch.tensor(preds)), references=labels)
@@ -313,7 +290,6 @@ if __name__=='__main__':
 
     from transformers import TrainerCallback,TrainerState,TrainerControl,EarlyStoppingCallback
     class MyCallback(TrainerCallback):
-        "A callback that prints a message at the beginning of training"
         def on_log(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
             print("save logs...")
             state.save_to_json(log_file_path)
@@ -326,7 +302,6 @@ if __name__=='__main__':
             labels = inputs['labels']
             outputs = model(inputs)
 
-            #self.outputs=outputs.item()
             labels = labels.long() if task_type=='multi_classification' else labels.float()
             if task_type=='multi_binary_classification':
                 labels = labels.reshape(-1)
@@ -366,12 +341,10 @@ if __name__=='__main__':
 
     )
 
-    #b /root/anaconda3/lib/python3.7/site-packages/transformers/trainer.py:
 
     training_args.disable_tqdm=args.disable_tqdm
     training_args.ignore_data_skip=True
 
-    #a=input('====')
 
 
     resume_from_checkpoint = True if (check_checkpoints(args.output_dir) and not args.rerun) else None
@@ -388,15 +361,8 @@ if __name__=='__main__':
     trainer.args._n_gpu=1
 
     print(trainer.evaluate())
-    #x=input('please press any key to continue...')
-    #torch.cuda_set_device(0)
-
-
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
-
-    if args.data_name=='ogbn-products' and args.model_scale in ('mini','small','middle'):
-        trainer.args.per_device_eval_batch_size=args.per_device_eval_batch_size*4
 
     predictions, labels, test_metrics = trainer.predict(test_set, metric_key_prefix="predict")
     test_metrics['best_val_metric']=trainer.state.best_metric

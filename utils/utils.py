@@ -3,52 +3,20 @@ import torch
 import scipy.sparse as sp
 from numpy.linalg import inv
 import pickle
-#import cupy as cp
-#from data.dataset import *
-from torch_geometric.datasets import *
-import torch.nn as nn
-#from ogb.lsc.pcqm4m_pyg import PygPCQM4MDataset
-from tqdm import tqdm
-#Cite-seer [23], Cora [24] and Pubmed [60] for evaluation
-#dblp, blogcatalog, filcr  #social network
-#graphormer zinc  ogbg-molhiv ogbg-molpcba pcqm4m-lsc
-#grover qm7 qm8
-#data = GraphormerDataset(dataset_spec='qm9',dataset_source='pyg')
-from pcqm4mv2_pyg import PygPCQM4Mv2Dataset
-from pcqm4m_pyg import PygPCQM4MDataset
-from ogb.graphproppred import PygGraphPropPredDataset
-from torch.utils.data import DataLoader
-from datasets import load_dataset, load_metric
-from torch_geometric.loader import NeighborLoader, ShaDowKHopSampler
 
-#12000
-import torch
-from torch import Tensor
-from torch_sparse import SparseTensor
-from torch_geometric.data import Data, Batch
-from torch_geometric.data import Dataset
-from sklearn.model_selection import train_test_split
-from typing import List
+from torch_geometric.datasets import *
+
 import torch
 import numpy as np
 from torch_sparse.matmul import matmul
-from torch import svd_lowrank
 from torch_sparse import SparseTensor
-import torch_sparse
 
-from torch_sparse import spspmm
-
-import copy
-from functools import lru_cache
 
 c = 0.15
 k = 5
 
 
-
-
 def adj_normalize(mx):
-    """Row-normalize sparse matrix"""
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -0.5).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -65,14 +33,12 @@ def get_intimacy_matrix(edges,n):
     print('normalize')
     adj_norm = adj_normalize(adj)
     print('inverse')
-    #adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
     eigen_adj = c * inv((sp.eye(adj.shape[0]) - (1 - c) * adj_norm).toarray())
 
     return eigen_adj
 
 
 def adj_normalize_sparse(mx):
-    """Row-normalize sparse matrix"""
     mx=mx.to(device)
     rowsum = mx.sum(1)
     r_inv =rowsum.pow(-0.5).flatten()
@@ -140,7 +106,6 @@ if __name__=='__main__':
 
     edges= data.data.edge_index
     n=data.data.x.shape[0]
-    #int_mat = get_intimacy_matrix(edges,n)
 
 
     adj = SparseTensor(row=edges[0], col=edges[1], value=torch.ones(edges.shape[1]), sparse_sizes=(n, n))

@@ -9,6 +9,8 @@ from functools import lru_cache
 import pyximport
 import torch.distributed as dist
 from torch_geometric.utils import to_undirected,add_self_loops
+from torch_geometric.data import Data
+
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
 from utils.utils import *
@@ -23,7 +25,6 @@ def convert_to_single_emb(x, offset: int = 512):
 
 
 def preprocess_item(raw_item,x_norm_func,args):
-    #raw_item=deepcopy(item)
     edge_attr, edge_index, x,y,idx = raw_item.edge_attr, raw_item.edge_index, raw_item.x,raw_item.y,raw_item.idx
     root_n_id=raw_item.root_n_id if 'root_n_id' in raw_item.to_dict().keys() else -1
 
@@ -31,14 +32,13 @@ def preprocess_item(raw_item,x_norm_func,args):
 
     N = x.size(0)
     if args.node_feature_type=='cate':
-        x = convert_to_single_emb(x)#????
+        x = convert_to_single_emb(x)
     elif args.node_feature_type=='dense':
         x = x_norm_func(x)
     else:
         raise ValueError('node feature type error')
 
     # node adj matrix [N, N] bool
-    #print(edge_index)
     try:
         edge_index = to_undirected(edge_index)
     except:
@@ -72,7 +72,6 @@ def preprocess_item(raw_item,x_norm_func,args):
 
     if 'svd' in args.node_level_modules:
         if N < args.svd_pos_dim:
-            #print(adj_w_sl,x,idx)
             svd_pos_emb = torch.zeros(N,args.svd_pos_dim*2)
         else:
             pu,pv = utils.get_svd_dense(adj_w_sl,args.svd_pos_dim)
@@ -124,7 +123,6 @@ def preprocess_item(raw_item,x_norm_func,args):
 
     # combine
     #node features
-
 
     item = Data(x=x,
                 edge_index=edge_index,

@@ -1,11 +1,3 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
-# Copyright (c) Facebook, Inc. and its affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
 import logging
 from typing import Optional, Tuple
 from graphtrasformer.gnn_layers import *
@@ -154,10 +146,6 @@ class GraphTransformer(nn.Module):
             self.attn_level_layers.append(layer)
 
 
-        #attention mask
-
-
-
 
         #gnn layers
         if use_gnn_layers:
@@ -221,7 +209,7 @@ class GraphTransformer(nn.Module):
         data_x = batched_data["x"]
         n_graph, n_node = data_x.size()[:2]
 
-        #calculate attention padding mask # B x T x T / Bx T+1 xT+1
+        #calculate attention padding mask # B x T x T / Bx T+1 x T+1
         padding_mask = batched_data['x_mask']
         if self.use_super_node:
             padding_mask_cls = torch.ones(
@@ -239,10 +227,8 @@ class GraphTransformer(nn.Module):
         #add the super node
         if self.use_super_node:
             x = self.add_super_node(x)# B x T+1 x C
-        #perturbation
-        if perturb is not None:
-            #x[:, 1:, :] += perturb
-            pass
+
+
 
         # attention bias computation,  B x H x (T+1) x (T+1)  or B x H x T x T
         attn_bias = torch.zeros(n_graph,self.num_attn_heads,n_node+int(self.use_super_node),n_node+int(self.use_super_node)).to(data_x.device)
@@ -255,10 +241,12 @@ class GraphTransformer(nn.Module):
             else:
                 raise ValueError('attention calculation error')
 
-        #attention mask TODO
+        #attention mask
         if self.attn_mask_modules in ('1hop','nhop'):
             adj_mask = getAttnMasks(batched_data,self.attn_mask_modules,self.use_super_node,self.num_attn_heads)
             attn_mask = attn_mask.unsqueeze(1).expand(-1,self.num_attn_heads,-1,-1)*adj_mask
+
+
         #===================data flow===============
         #input feature normalization and dropout
         if self.emb_layer_norm is not None:
@@ -296,7 +284,6 @@ class GraphTransformer(nn.Module):
 
             #FFN layer
             x = layer.ffn_layer(x)
-
             if not last_state_only:
                 inner_states.append(x)
 

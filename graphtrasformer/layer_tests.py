@@ -4,8 +4,6 @@ from graphtrasformer.layers import *
 if __name__=='__main__':
 
 
-
-
     layer = Transformer_Layer(
                              num_heads=4,
                              hidden_dim=64,
@@ -24,7 +22,6 @@ if __name__=='__main__':
     mask[:,:80,:80]=1
 
 
-    #pred = layer(x,x_mask)
 
     out,attn = layer.attention(x,mask)
 

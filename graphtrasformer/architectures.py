@@ -1,7 +1,5 @@
 from graphtrasformer.gt_models import *
 
-from graphormer.graphormer_graph_encoder import GraphormerGraphEncoder
-
 def get_model(args):
     return GraphTransformer(
         num_encoder_layers = args.num_encoder_layers,
@@ -43,35 +41,3 @@ def get_model(args):
         gnn_dropout = args.gnn_dropout
     )
 
-
-#def graphtransformer_basic_architecture(args):
-
-def get_graphormer_model(args):
-    return GraphormerGraphEncoder(
-        num_atoms = args.num_atoms,
-        num_in_degree = args.num_in_degree,
-        num_out_degree = args.num_out_degree,
-        num_edges = args.num_edges,
-        num_spatial = args.num_spatial,
-        num_edge_dis = args.num_edge_dis,
-        edge_type = args.edge_type,
-        multi_hop_max_dist = args.multi_hop_max_dist,
-        num_encoder_layers = args.num_encoder_layers,
-        embedding_dim = args.hidden_dim,
-        ffn_embedding_dim = args.ffn_hidden_dim,
-        num_attention_heads=args.num_attn_heads,
-        dropout=args.dropout,
-        attention_dropout=args.attn_dropout,
-        activation_dropout = 0.1,
-        encoder_normalize_before= False,
-        apply_graphormer_init= False,
-        activation_fn= args.activation_fn,
-        embed_scale=None,
-        freeze_embeddings= False,
-        n_trans_layers_to_freeze = 0,
-        export= False,
-        traceable= False,
-        q_noise = 0.0,
-        qn_block_size= 8,
-        num_class=args.num_class
-    )

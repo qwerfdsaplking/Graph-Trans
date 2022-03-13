@@ -1,33 +1,14 @@
-from data.dataset import *
 from torch_geometric.datasets import *
 import torch.nn as nn
-#from ogb.lsc.pcqm4m_pyg import PygPCQM4MDataset
 from tqdm import tqdm
 
-from pcqm4mv2_pyg import PygPCQM4Mv2Dataset
-from pcqm4m_pyg import PygPCQM4MDataset
+
 from ogb.graphproppred import PygGraphPropPredDataset
 from ogb.nodeproppred import PygNodePropPredDataset
 from ogb.graphproppred import Evaluator
-from torch.utils.data import DataLoader
 from datasets import load_dataset, load_metric
-from torch_geometric.loader import NeighborLoader, ShaDowKHopSampler
 from data.pyg_datasets.pyg_dataset import GraphormerPYGDataset, Graphtrans_Sampling_Dataset,Graphtrans_Sampling_Dataset_v2
-#12000
-import torch
-from torch import Tensor
-from torch_sparse import SparseTensor
-from torch_geometric.data import Data, Batch
-from torch_geometric.data import Dataset
-from sklearn.model_selection import train_test_split
-from typing import List
-import torch
-import numpy as np
-from data.wrapper import preprocess_item
 
-
-import copy
-from functools import lru_cache
 
 def get_loss_and_metric(data_name):
 
@@ -93,30 +74,24 @@ def get_graph_level_dataset(name,param=None,seed=1024,set_default_params=False,a
         test_set = ZINC(path,subset=True,split='test')
         args.node_feature_type='cate'
         args.num_class =1
-
         args.eval_steps=1000
         args.save_steps=1000
-
         args.greater_is_better = False
-
         args.warmup_steps=40000
         args.max_steps=400000
+
     elif name == 'ZINC-full':  # 250,000 molecular graphs with up to 38 heavy atoms
         train_set = ZINC(path, subset=False, split='train')
         val_set = ZINC(path, subset=False, split='val')
         test_set = ZINC(path, subset=False, split='test')
         args.node_feature_type = 'cate'
         args.num_class = 1
-
         args.eval_steps = 1000
         args.save_steps = 1000
-
         args.greater_is_better = False
-
         args.warmup_steps = 40000
         args.max_steps = 400000
-        #args.node_level_modules = ()
-        #args.attn_level_modules = ()
+
     elif name == "ogbg-molpcba":
         inner_dataset = PygGraphPropPredDataset(name)
         idx_split = inner_dataset.get_idx_split()
@@ -125,18 +100,13 @@ def get_graph_level_dataset(name,param=None,seed=1024,set_default_params=False,a
         test_idx = idx_split["test"]
         args.node_feature_type = 'cate'
         args.num_class = 128
-
         args.eval_steps = 2000
         args.save_steps = 2000
-
         args.greater_is_better = True
-
         args.warmup_steps = 40000
         args.max_steps = 1000000
 
 
-        #args.warmup_steps = 40000
-        #args.max_steps = 800000
 
     elif name == "ogbg-molhiv":
         inner_dataset = PygGraphPropPredDataset(name)
@@ -146,15 +116,11 @@ def get_graph_level_dataset(name,param=None,seed=1024,set_default_params=False,a
         test_idx = idx_split["test"]
         args.node_feature_type = 'cate'
         args.num_class = 1
-
         args.eval_steps = 1000
         args.save_steps = 1000
-
         args.greater_is_better = True
-
         args.warmup_steps = 40000
         args.max_steps = 1200000
-
 
 
 
@@ -165,7 +131,6 @@ def get_graph_level_dataset(name,param=None,seed=1024,set_default_params=False,a
         args.learning_rate=1e-5
         args.node_feature_type='dense'
         args.node_feature_dim=768
-
         args.greater_is_better = True
 
 
@@ -174,7 +139,6 @@ def get_graph_level_dataset(name,param=None,seed=1024,set_default_params=False,a
         raise ValueError('no such dataset')
 
 
-    #return train_set,val_set,test_set,dataset
     dataset = GraphormerPYGDataset(
         dataset=inner_dataset,
         train_idx=train_idx,
@@ -193,18 +157,13 @@ def get_node_level_dataset(name,param=None,args=None):
     path = 'dataset/' + name
     print(path)
 
-
-    #args.use_super_node=False
-
     if args.sampling_algo=='shadowkhop':
         args.num_neighbors=10
     elif args.sampling_algo=='sage':
         args.num_neighbors=50
 
-    #node classification  tranductive/inductive  link prediction
     if name in ['cora','citeseer','dblp','pubmed']:
         dataset = CitationFull(f'dataset/{name}',name)
-        N = dataset.data.x.shape[0]
 
 
     elif name =='flickr':
@@ -228,7 +187,6 @@ def get_node_level_dataset(name,param=None,args=None):
 
 
     elif name=='ogbn-products':
-
         dataset = PygNodePropPredDataset(name='ogbn-products')
         split_idx = dataset.get_idx_split()
         train_idx, valid_idx, test_idx = split_idx["train"], split_idx["valid"], split_idx["test"]
@@ -309,9 +267,6 @@ def get_node_level_dataset(name,param=None,args=None):
 
 #just test
 if __name__=='__main__':
-    #name='QM9'
-
-    #heterogeneous
     pass
 
 
