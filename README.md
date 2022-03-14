@@ -34,7 +34,7 @@ We implement the representative components in three groups and conduct a compreh
                    --gnn_type ${CUSTOMIZED_GNN} \
                    --sampling_algo ${CUSTOMIZED_SAMPLING_ALGORITHMS}
     ```
-- Example 1: Transformer with degree postional embedding, spatial encoding, shortest path edge encdoingg
+- Example 1: Transformer with degree postional embedding, spatial encoding, shortest path edge encoding
     
     ```
     $python run.py --seed 1024 \
@@ -93,6 +93,4 @@ Please cite the paper whenever our graph transformer is used to produce publishe
 }
 ```
 
-
-<br><br><br>
 
