@@ -123,7 +123,7 @@ class NodeFeatureEncoder(nn.Module):
 
     def forward(self, batched_data):
         x=batched_data["x"]
-        if self.feat_type=='cate':#对于多值特征，求embedding后均值
+        if self.feat_type=='cate':#
             node_feature = self.feature_encoder(x).sum(dim=-2)  # [n_graph, n_node, n_hidden]
         else:
             node_feature = self.feature_encoder(x)
@@ -149,7 +149,7 @@ def getAttnMasks(batched_data,attn_mask_modules,use_super_node,num_heads):
     return attn_mask
 
 
-class GraphAttnHopBias(nn.Module):#还没考虑没有super node的情况
+class GraphAttnHopBias(nn.Module):
     def __init__(
         self,
         num_heads,
