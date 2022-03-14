@@ -85,9 +85,9 @@ def preprocess_item(raw_item,x_norm_func,args):
     else:
         adj_norm = 0
 
-    if 'spatial' in args.attn_level_modules or 'sdp' in args.attn_level_modules:
+    if 'spatial' in args.attn_level_modules or 'spe' in args.attn_level_modules:
         # edge feature here
-        if edge_attr is not None and 'sdp' in args.attn_level_modules:
+        if edge_attr is not None and 'spe' in args.attn_level_modules:
             if len(edge_attr.size()) == 1:
                 edge_attr = edge_attr[:, None]
             attn_edge_type = torch.zeros([N, N, edge_attr.size(-1)], dtype=torch.long)

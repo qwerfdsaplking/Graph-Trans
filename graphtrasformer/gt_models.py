@@ -58,7 +58,7 @@ class GraphTransformer(nn.Module):
         num_atoms: int = None,
 
         node_level_modules: tuple = ('degree'),
-        attn_level_modules: tuple = ('sdp','spatial'),
+        attn_level_modules: tuple = ('spe','spatial'),
         attn_mask_modules: str = None,
 
         num_in_degree: int = None,
@@ -130,7 +130,7 @@ class GraphTransformer(nn.Module):
                                              num_spatial=num_spatial,
                                              n_layers=num_encoder_layers,
                                              use_super_node=use_super_node)
-            elif module_name=='sdp':
+            elif module_name=='spe':
                 layer = GraphAttnEdgeBias(num_heads = num_attn_heads,
                                           num_edges = num_edges,
                                           num_edge_dis = num_edge_dis,

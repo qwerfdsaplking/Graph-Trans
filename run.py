@@ -112,7 +112,7 @@ def parse_args():
     parser.add_argument('--num_out_degree', type=int, default=512)
 
     #various attention bias/mask parameters
-    parser.add_argument('--attn_level_modules', type=str_tuple, default=())#,'nhop'))'spatial',sdp
+    parser.add_argument('--attn_level_modules', type=str_tuple, default=())#,'nhop'))'spatial',spe
     parser.add_argument('--attn_mask_modules',type=str, default=None)#'nhop'
     parser.add_argument('--num_edges', type=int, default=512*3)
     parser.add_argument('--num_spatial', type=int, default=512)
