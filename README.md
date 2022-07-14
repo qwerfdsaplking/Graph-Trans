@@ -78,6 +78,7 @@ We implement the representative components in three groups and conduct a compreh
 - tensorflow >= 2.3.1
 - scikit-learn >= 0.23.2
 - ogb >= 1.3.2
+- datasets >=1.8.0
 
 ## Results
 Please refer to our [paper](https://arxiv.org/pdf/2202.08455.pdf)
